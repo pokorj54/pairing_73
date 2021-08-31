@@ -25,8 +25,11 @@ struct HopcroftKarp{
         assert(v < m);
         g[u].push_back(v);
     }
-
-	int maxbpm(){
+	
+	/*
+	* Calculates the maximum bipartite matching size
+	*/
+	int maxBipartiteMatching(){
 		int res=0;
 		while(bfs())
 			for(int i=0;i<n;++i)
@@ -34,11 +37,17 @@ struct HopcroftKarp{
 		return res;
 	}
 
-    const vector<int> & getleftpartiteMatching() const{
+	/*
+	* Returns for each vertice in the left partite what is his pair in the right partite
+	*/
+    const vector<int> & getLeftPartiteMatching() const{
         return ma;
     }
 
-    const vector<int> & getrightPartiteMatching() const{
+	/*
+	* Returns for each vertice in the right partite what is his pair in the left partite
+	*/
+    const vector<int> & getRightPartiteMatching() const{
         return mb;
     }
 
