@@ -2,6 +2,9 @@
 
 #include <functional>
 #include <cassert>
+#include <iostream>
+
+using namespace std;
 
 /*
 * Class for representing point in 7^3
@@ -17,7 +20,20 @@ struct Point{
     bool operator==(const Point & o) const{
          return x == o.x && y == o.y && z == o.z;
     }
+
+    static Point loadPoint(istream & is){
+        int x, y, z;
+        cin >> x >> y >> z;
+        assert(is.good());
+        return Point(x, y, z);
+    }
+
+    friend ostream & operator << (ostream & os, const Point & point);
 };
+
+ostream & operator << (ostream & os, const Point & p){
+    return os << p.x << p.y << p.z;
+}
 
 namespace std
 {

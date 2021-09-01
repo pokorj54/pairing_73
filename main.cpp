@@ -3,9 +3,11 @@
 #include "hopcroft_karp.hpp"
 #include "line.hpp"
 #include "point.hpp"
+#include "match.hpp"
+#include "console_player.hpp"
+#include "utility.hpp"
 
 #include <iostream>
-#include <algorithm>
 
 const int cross = -1;
 const int circle = -2;
@@ -28,10 +30,6 @@ vector<Line> getNoncoveredLines(const vector<Point> & blockingPoints){
         }
     }
     return lines;
-}
-template <typename T>
-bool isInVector(const vector<T>& v, T t) {
-    return std::find(v.begin(), v.end(), t) != v.end();
 }
 
 HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition & board){
@@ -97,16 +95,17 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
 }
 
 int main(void){
-    BoardPosition board; // generate
-    board.croses.push_back(Point(3,3,3));
-    board.circles.push_back(Point(0,0,0));
-    board.croses.push_back(Point(1,1,5));
-    board.circles.push_back(Point(1,5,1));
-    board.croses.push_back(Point(2,2,4));
-    board.circles.push_back(Point(2,4,4));
-    board.croses.push_back(Point(0,0,6));
-    board.circles.push_back(Point(4,4,2));
-
+    ConsolePlayer cp = ConsolePlayer(cout, cin);
+    BoardPosition board = Match::play(cp, cp, 8); // generate
+    // board.croses.push_back(Point(3,3,3));
+    // board.circles.push_back(Point(0,0,0));
+    // board.croses.push_back(Point(1,1,5));
+    // board.circles.push_back(Point(1,5,1));
+    // board.croses.push_back(Point(2,2,4));
+    // board.circles.push_back(Point(2,4,4));
+    // board.croses.push_back(Point(0,0,6));
+    // board.circles.push_back(Point(4,4,2));
+    
     HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
     HC.maxBipartiteMatching();
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
