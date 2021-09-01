@@ -36,8 +36,8 @@ struct HopcroftKarp{
 			rightToInt.insert({v, rightToInt.size()});
 			intToRight.push_back(v);
 		}
-		uid = leftToInt[u];
-		vid = rightToInt[v];
+		uid = leftToInt.at(u);
+		vid = rightToInt.at(v);
         assert(uid < n);
         assert(vid < m);
         g[uid].push_back(vid);
