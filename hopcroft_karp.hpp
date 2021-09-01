@@ -1,9 +1,14 @@
+#pragma once
+
 #include <vector>
+#include <unordered_map>
 #include <queue>
 #include <climits>
 #include <cassert>
 
 using namespace std;
+
+// Todo templatovat
 
 // Algorithm for bipartite matching
 // Complexity: O(sqrt(N) * M)
@@ -12,6 +17,7 @@ using namespace std;
 // unmatched, matched, ... stops when it finds and unmatched node
 // (has to be on the right side). then it does dfses on the created
 // graph (finds alternating paths). repeats everything.
+template<typename L, typename R>
 struct HopcroftKarp{
 	/*
     * n is the size of left partite and m is the size of right partite
@@ -20,10 +26,21 @@ struct HopcroftKarp{
     */
     HopcroftKarp(int n,int m):n(n),m(m),ma(n,-1),mb(m,n),g(n){}
 
-	void addEdge(int u,int v){
-        assert(u < n);
-        assert(v < m);
-        g[u].push_back(v);
+	void addEdge(L u,R v){
+		int uid, vid;
+		if(leftToInt.count(u) == 0){
+			leftToInt.insert({u, leftToInt.size()});
+			intToLeft.push_back(u);
+		}
+		if(rightToInt.count(v) == 0){
+			rightToInt.insert({v, rightToInt.size()});
+			intToRight.push_back(v);
+		}
+		uid = leftToInt[u];
+		vid = rightToInt[v];
+        assert(uid < n);
+        assert(vid < m);
+        g[uid].push_back(vid);
     }
 	
 	/*
@@ -40,19 +57,32 @@ struct HopcroftKarp{
 	/*
 	* Returns for each vertice in the left partite what is his pair in the right partite
 	*/
-    const vector<int> & getLeftPartiteMatching() const{
-        return ma;
+    unordered_map<L, R> getLeftPartiteMatching() const{
+		unordered_map<L, R> result;
+		for(const L & l : intToLeft){
+			result.insert({l, intToRight[ma[leftToInt.at(l)]]});
+		}
+        return result;
     }
 
 	/*
 	* Returns for each vertice in the right partite what is his pair in the left partite
 	*/
-    const vector<int> & getRightPartiteMatching() const{
-        return mb;
+    unordered_map<R, L> getRightPartiteMatching() const{
+        unordered_map<R, L> result;
+		for(const R & r : intToRight){
+			result.insert({r, intToLeft[mb[rightToInt.at(r)]]});
+		}
+        return result;
     }
 
 private:
 	int n,m;
+	unordered_map<L,int> leftToInt;
+	unordered_map<R,int> rightToInt;
+	vector<L> intToLeft;
+	vector<R> intToRight;
+
 	vector<int>ma,mb,dist; // n is a dummy node
 	vector<vector<int>>g;
 	bool bfs(){
