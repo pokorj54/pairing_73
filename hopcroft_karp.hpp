@@ -76,6 +76,14 @@ struct HopcroftKarp{
         return result;
     }
 
+	size_t leftPartiteSize() const{
+		return n;
+	}
+
+	size_t rightPartiteSize() const{
+		return m;
+	}
+
 private:
 	int n,m;
 	unordered_map<L,int> leftToInt;

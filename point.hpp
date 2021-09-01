@@ -1,8 +1,10 @@
 #pragma once
 
+#include <functional>
 #include <cassert>
+
 /*
-* Class for representing point in 7_3
+* Class for representing point in 7^3
 */
 struct Point{
     int x, y, z;
