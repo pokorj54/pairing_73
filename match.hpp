@@ -4,19 +4,17 @@
 #include "board_position.hpp"
 
 struct Match{
-    static BoardPosition play(Player & first, Player & second, size_t numberOfPlies){
+    static BoardPosition play(Player & first, Player & second, function<bool(BoardPosition)> shold_end){
         BoardPosition result;
         while(true){
-            if(numberOfPlies == 0){
+            if(shold_end(result)){
                 break;
             }
             result.addPly(first.play(result.croses, result.circles));
-            --numberOfPlies;
-            if(numberOfPlies == 0){
+            if(shold_end(result)){
                 break;
             }
             result.addPly(second.play(result.circles, result.croses));
-            --numberOfPlies;
         }
         return result;
     }

@@ -6,6 +6,7 @@
 #include "match.hpp"
 #include "console_player.hpp"
 #include "random_player.hpp"
+#include "pairing_preparer.hpp"
 #include "utility.hpp"
 
 #include <iostream>
@@ -96,9 +97,12 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
 }
 
 int main(void){
-    ConsolePlayer cp = ConsolePlayer(cout, cin);
+    //ConsolePlayer cp = ConsolePlayer(cout, cin);
     RandomPlayer rp;
-    BoardPosition board = Match::play(rp, cp, 8); // generate
+    PairingPreparer pp;
+    BoardPosition board = Match::play(rp, pp, [&pp](const BoardPosition & board){ 
+        (void)board;
+        return pp.isFinished();}); // generate
     // board.croses.push_back(Point(3,3,3));
     // board.circles.push_back(Point(0,0,0));
     // board.croses.push_back(Point(1,1,5));
@@ -109,9 +113,9 @@ int main(void){
     // board.circles.push_back(Point(4,4,2));
     
     HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
-    HC.maxBipartiteMatching();
+    size_t matching_size = HC.maxBipartiteMatching();
+    assert(HC.rightPartiteSize() == matching_size);
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
-    assert(linesPartite.size() == HC.rightPartiteSize());
     // todo handle invlaid BPM more nicely 
     array<array<array<int, 7>,7>,7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);

@@ -46,8 +46,8 @@ struct HopcroftKarp{
 	/*
 	* Calculates the maximum bipartite matching size
 	*/
-	int maxBipartiteMatching(){
-		int res=0;
+	size_t maxBipartiteMatching(){
+		size_t res=0;
 		while(bfs())
 			for(int i=0;i<n;++i)
 				res+=ma[i]==-1&&dfs(i);
@@ -60,7 +60,7 @@ struct HopcroftKarp{
     unordered_map<L, R> getLeftPartiteMatching() const{
 		unordered_map<L, R> result;
 		for(const L & l : intToLeft){
-			result.insert({l, intToRight[ma[leftToInt.at(l)]]});
+			result.insert({l, intToRight.at(ma.at(leftToInt.at(l)))});
 		}
         return result;
     }
@@ -71,7 +71,7 @@ struct HopcroftKarp{
     unordered_map<R, L> getRightPartiteMatching() const{
         unordered_map<R, L> result;
 		for(const R & r : intToRight){
-			result.insert({r, intToLeft[mb[rightToInt.at(r)]]});
+			result.insert({r, intToLeft.at(mb.at(rightToInt.at(r)))});
 		}
         return result;
     }
