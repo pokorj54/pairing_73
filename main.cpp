@@ -5,6 +5,7 @@
 #include "point.hpp"
 #include "match.hpp"
 #include "console_player.hpp"
+#include "random_player.hpp"
 #include "utility.hpp"
 
 #include <iostream>
@@ -96,7 +97,8 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
 
 int main(void){
     ConsolePlayer cp = ConsolePlayer(cout, cin);
-    BoardPosition board = Match::play(cp, cp, 8); // generate
+    RandomPlayer rp;
+    BoardPosition board = Match::play(rp, cp, 8); // generate
     // board.croses.push_back(Point(3,3,3));
     // board.circles.push_back(Point(0,0,0));
     // board.croses.push_back(Point(1,1,5));
