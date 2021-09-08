@@ -41,7 +41,7 @@ HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition & board){
     for(const Line & line : linesToCover){
         Line flippedLine = line.getFlippedLine();
         for(const Point & point : line.getPointsOnLine()){
-            if(isInVector(board.croses, point)){ // circles are gone because, the lines containing them were filtered out
+            if(isInVector(board.crosses, point)){ // circles are gone because, the lines containing them were filtered out
                 continue;
             }
             hopcroftKarp.addEdge(point, line);
@@ -68,7 +68,7 @@ void outputSolution(const BoardPosition & startingPosition, const unordered_map<
     for(const Point & p : startingPosition.circles){
         outputgrid[p.x][p.y][p.z] = circle;
     }
-    for(const Point & p : startingPosition.croses){
+    for(const Point & p : startingPosition.crosses){
         outputgrid[p.x][p.y][p.z] = cross;
     }
     int i = 1;
@@ -98,27 +98,27 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
 
 int main(void){
     //ConsolePlayer cp = ConsolePlayer(cout, cin);
-    RandomPlayer rp;
-    PairingPreparer pp;
-    BoardPosition board = Match::play(rp, pp, [&pp](const BoardPosition & board){ 
-        (void)board;
-        return pp.isFinished();}); // generate
-    // board.croses.push_back(Point(3,3,3));
-    // board.circles.push_back(Point(0,0,0));
-    // board.croses.push_back(Point(1,1,5));
-    // board.circles.push_back(Point(1,5,1));
-    // board.croses.push_back(Point(2,2,4));
-    // board.circles.push_back(Point(2,4,4));
-    // board.croses.push_back(Point(0,0,6));
-    // board.circles.push_back(Point(4,4,2));
-    
-    HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
-    size_t matching_size = HC.maxBipartiteMatching();
-    assert(HC.rightPartiteSize() == matching_size);
-    unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
-    // todo handle invlaid BPM more nicely 
-    array<array<array<int, 7>,7>,7> solutionGrid = {0};
-    outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-    printSolution(solutionGrid, cout);
+    for(int i = 0; i < 10000; ++i){
+        RandomPlayer rp;
+        PairingPreparer pp;
+        BoardPosition board = Match::play(rp, pp, [&pp](const BoardPosition & board){ 
+            (void)board;
+            return pp.isFinished();}
+        );
+        
+        HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
+        size_t matching_size = HC.maxBipartiteMatching();
+
+        // todo handle invlaid BPM more nicely 
+        if(HC.rightPartiteSize() != matching_size){
+            cerr << "Insuficient matching" << endl << board << endl;
+            throw;
+        }
+        
+        unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
+        array<array<array<int, 7>,7>,7> solutionGrid = {0};
+        outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
+        printSolution(solutionGrid, cout);
+    }
     return 0;
 }

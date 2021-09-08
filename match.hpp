@@ -10,11 +10,11 @@ struct Match{
             if(shold_end(result)){
                 break;
             }
-            result.addPly(first.play(result.croses, result.circles));
+            result.addPly(first.play(result.crosses, result.circles));
             if(shold_end(result)){
                 break;
             }
-            result.addPly(second.play(result.circles, result.croses));
+            result.addPly(second.play(result.circles, result.crosses));
         }
         return result;
     }

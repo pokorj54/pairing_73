@@ -47,14 +47,19 @@ private:
             remainingLayers = {0, 1, 2, 4, 5, 6};
             return Point(3,3,3);
         }
-        int lastLayer = opponentStones[opponentStones.size()-1].x;
-        lastLayer = isInVector(remainingLayers, lastLayer) ? lastLayer : remainingLayers[0];
-        remainingLayers.erase(remove(remainingLayers.begin(), remainingLayers.end(), lastLayer));
-        vector<Point> possibleSpots = getPossibleSpots(lastLayer, opponentStones);
-        Point next_stone = leastColinearPoint(playerStones, possibleSpots);
-        if(opponentStones.size() == 3){
-            finished = true;
+        // ply 2, any diagonal is ok
+        if(opponentStones.size() == 2){
+            int lastLayer = opponentStones[opponentStones.size()-1].x;
+            lastLayer = isInVector(remainingLayers, lastLayer) ? lastLayer : remainingLayers[0];
+            remainingLayers.erase(remove(remainingLayers.begin(), remainingLayers.end(), lastLayer));
+            vector<Point> possibleSpots = getPossibleSpots(lastLayer, opponentStones);
+            Point next_stone = leastColinearPoint(playerStones, possibleSpots);
+            return next_stone;
         }
+        // ply 3
+        vector<Point> possibleSpots = getPossibleSpots(remainingLayers, opponentStones);
+        Point next_stone = leastColinearPoint(playerStones, possibleSpots);
+        finished = true;
         return next_stone;
     }
 
