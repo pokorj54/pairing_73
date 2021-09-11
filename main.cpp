@@ -14,12 +14,18 @@
 #include <sstream>
 #include <fstream>
 
+#include <omp.h>
+
+using namespace std;
+
 const string ouput_folder = "positions/";
 
 const int cross = -1;
 const int circle = -2;
 
 const vector<Line> ALL_CANONICAL_LINES = Line::generateAllCanonicalLines();
+
+vector<vector<Point>> toSolve; 
 
 
 void iterateThroughAllBoardsByCase(const function<void(vector<Point>)> & f, bool firstCenter){
@@ -53,6 +59,11 @@ void iterateThroughAllBoardsByCase(const function<void(vector<Point>)> & f, bool
             moves[0] = moves[0].next();
         }
     }
+}
+
+void iterateThroughAllBoards(const function<void(vector<Point>)> & f){
+    iterateThroughAllBoardsByCase(f, false);
+    iterateThroughAllBoardsByCase(f, true);
 }
 
 vector<Line> getNoncoveredLines(const vector<Point> & blockingPoints){
@@ -170,8 +181,23 @@ void tryCase(const vector<Point> & points){
     fileStream.close();
 }
 
+void putToVector(const vector<Point> & points){
+    toSolve.push_back(points);
+}
+
 int main(void){
-    iterateThroughAllBoardsByCase(tryCase, false);
-    iterateThroughAllBoardsByCase(tryCase, true);
+    //todo set by number of system cores
+    omp_set_num_threads(8);
+    cout << "threads: " << omp_get_num_threads() << endl;
+
+    cout << "Creating all cases" << endl;
+    iterateThroughAllBoards(putToVector);
+    cout << "Cases created: " <<  toSolve.size() << endl;
+
+    #pragma omp parallel for schedule(static, 1)
+    for(size_t i = 0; i < toSolve.size(); ++i){
+        tryCase(toSolve[i]);
+    }
+
     return 0;
 }
