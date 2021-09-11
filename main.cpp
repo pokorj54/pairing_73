@@ -11,6 +11,8 @@
 #include "utility.hpp"
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 const int cross = -1;
 const int circle = -2;
@@ -158,7 +160,12 @@ void tryCase(const vector<Point> & points){
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
     array<array<array<int, 7>,7>,7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-    printSolution(solutionGrid, cout);
+    std::stringstream ss;
+    ss << "positions/" << board << ".txt";
+    std::string filename = ss.str();
+    std::ofstream fileStream(filename, std::ios::out);
+    printSolution(solutionGrid, fileStream);
+    fileStream.close();
 }
 
 int main(void){

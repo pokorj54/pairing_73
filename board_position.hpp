@@ -34,7 +34,7 @@ struct BoardPosition{
             }
             os << board.crosses[i];
             if(i < board.circles.size()){
-                cout << " " << board.circles[i];
+                os << " " << board.circles[i];
             }
         }
         return os;
