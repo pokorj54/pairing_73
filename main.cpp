@@ -14,6 +14,8 @@
 #include <sstream>
 #include <fstream>
 
+const string ouput_folder = "positions/";
+
 const int cross = -1;
 const int circle = -2;
 
@@ -161,7 +163,7 @@ void tryCase(const vector<Point> & points){
     array<array<array<int, 7>,7>,7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
     std::stringstream ss;
-    ss << "positions/" << board << ".txt";
+    ss << ouput_folder << board << ".txt";
     std::string filename = ss.str();
     std::ofstream fileStream(filename, std::ios::out);
     printSolution(solutionGrid, fileStream);
