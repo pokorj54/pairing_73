@@ -6,6 +6,7 @@
 #include "match.hpp"
 #include "console_player.hpp"
 #include "random_player.hpp"
+#include "given_moves_player.hpp"
 #include "pairing_preparer.hpp"
 #include "utility.hpp"
 
@@ -16,6 +17,39 @@ const int circle = -2;
 
 const vector<Line> ALL_CANONICAL_LINES = Line::generateAllCanonicalLines();
 
+
+void iterateThroughAllBoardsByCase(const function<void(vector<Point>)> & f, bool firstCenter){
+    vector<Point> moves = vector<Point>(3, Point::first());
+    while(true){
+        while(true){
+            while(true){
+                vector<Point> arguments;
+                if(firstCenter){
+                    arguments.push_back(Point(3,3,3));
+                }
+                arguments.insert(arguments.end(), moves.begin(), moves.end());
+                f(arguments);
+                if(!moves[2].hasNext()){
+                    moves[2] = Point::first();
+                    break;
+                }
+                moves[2] = moves[2].next();
+            }
+            if(!moves[1].hasNext()){
+                moves[1] = Point::first();
+                break;
+            }
+            moves[1] = moves[1].next();
+        }   
+        if(!moves[0].hasNext()){
+            break;
+        }
+        moves[0] = moves[0].next();
+        if(moves[0] == Point(3,3,3)){
+            moves[0] = moves[0].next();
+        }
+    }
+}
 
 vector<Line> getNoncoveredLines(const vector<Point> & blockingPoints){
     vector<Line> lines;
@@ -96,29 +130,39 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
     return result;
 }
 
-int main(void){
-    //ConsolePlayer cp = ConsolePlayer(cout, cin);
-    for(int i = 0; i < 10000; ++i){
-        RandomPlayer rp;
+void tryCase(const vector<Point> & points){
+    BoardPosition board;
+    try{
+        GivenMovesPlayer gmp(points);
         PairingPreparer pp;
-        BoardPosition board = Match::play(rp, pp, [&pp](const BoardPosition & board){ 
+        board = Match::play(gmp, pp, [&pp](const BoardPosition & board){ 
             (void)board;
             return pp.isFinished();}
         );
-        
-        HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
-        size_t matching_size = HC.maxBipartiteMatching();
-
-        // todo handle invlaid BPM more nicely 
-        if(HC.rightPartiteSize() != matching_size){
-            cerr << "Insuficient matching" << endl << board << endl;
-            throw;
-        }
-        
-        unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
-        array<array<array<int, 7>,7>,7> solutionGrid = {0};
-        outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-        printSolution(solutionGrid, cout);
+    }catch(const CannotPlayMoveException & e){
+        cerr << "Invalid sequence ";
+        print(points, cerr);
+        cerr << endl;
+        return;
     }
+    
+    HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
+    size_t matching_size = HC.maxBipartiteMatching();
+
+    // todo handle invlaid BPM more nicely 
+    if(HC.rightPartiteSize() != matching_size){
+        cerr << "Insuficient matching" << endl << board << endl;
+        throw;
+    }
+    
+    unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
+    array<array<array<int, 7>,7>,7> solutionGrid = {0};
+    outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
+    printSolution(solutionGrid, cout);
+}
+
+int main(void){
+    iterateThroughAllBoardsByCase(tryCase, false);
+    iterateThroughAllBoardsByCase(tryCase, true);
     return 0;
 }

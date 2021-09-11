@@ -21,6 +21,27 @@ struct Point{
          return x == o.x && y == o.y && z == o.z;
     }
 
+    static Point first(){
+        return Point(0,0,0);
+    }
+
+    bool hasNext() const{
+        return !(x == 6 && y == 6 && z == 6);
+    }
+
+    Point next() const{
+        if(x == 6 && y == 6 && z == 6){
+            throw;
+        }
+        if(y == 6 && z ==6){
+            return Point(x+1, 0, 0); 
+        }else if(z == 6){
+            return Point(x, y+1, 0);
+        }else{
+            return Point(x, y, z+1);
+        }
+    }
+    
     static Point loadPoint(istream & is){
         int x, y, z;
         cin >> x >> y >> z;
