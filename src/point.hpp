@@ -49,12 +49,14 @@ struct Point {
         return Point(x, y, z);
     }
 
-    friend ostream& operator<<(ostream& os, const Point& point);
-};
+    string toString() const {
+        return to_string(x) + to_string(y) + to_string(z);
+    }
 
-ostream& operator<<(ostream& os, const Point& p) {
-    return os << p.x << p.y << p.z;
-}
+    friend ostream& operator<<(ostream& os, const Point& p) {
+        return os << p.x << p.y << p.z;
+    }
+};
 
 namespace std {
 template <>

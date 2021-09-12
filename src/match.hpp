@@ -1,20 +1,20 @@
 #pragma once
 
-#include "board_position.hpp"
+#include "board.hpp"
 #include "player.hpp"
 
 struct Match {
-    static BoardPosition play(Player& first, Player& second, function<bool(BoardPosition)> shold_end) {
-        BoardPosition result;
+    static Board play(Player& first, Player& second, function<bool(Board)> shold_end) {
+        Board result;
         while (true) {
             if (shold_end(result)) {
                 break;
             }
-            result.addPly(first.play(result.crosses, result.circles));
+            result.addPly(first.play(result.getCrosses(), result.getCircles()));
             if (shold_end(result)) {
                 break;
             }
-            result.addPly(second.play(result.circles, result.crosses));
+            result.addPly(second.play(result.getCircles(), result.getCrosses()));
         }
         return result;
     }

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "board_position.hpp"
+#include "board.hpp"
 #include "console_player.hpp"
 #include "given_moves_player.hpp"
 #include "hopcroft_karp.hpp"
@@ -82,14 +82,14 @@ vector<Line> getNoncoveredLines(const vector<Point>& blockingPoints) {
     return lines;
 }
 
-HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition& board) {
-    vector<Line> linesToCover = getNoncoveredLines(board.circles);
+HopcroftKarp<Point, Line> initializeHopcroftKarp(const Board& board) {
+    vector<Line> linesToCover = getNoncoveredLines(board.getCircles());
 
     HopcroftKarp<Point, Line> hopcroftKarp = HopcroftKarp<Point, Line>(7 * 7 * 7 - board.pliesMade(), linesToCover.size() * 2);
     for (const Line& line : linesToCover) {
         Line flippedLine = line.getFlippedLine();
         for (const Point& point : line.getPointsOnLine()) {
-            if (isInVector(board.crosses, point)) {  // circles are gone because, the lines containing them were filtered out
+            if (isInVector(board.getCrosses(), point)) {  // circles are gone because, the lines containing them were filtered out
                 continue;
             }
             hopcroftKarp.addEdge(point, line);
@@ -111,11 +111,11 @@ void printSolution(const array<array<array<int, 7>, 7>, 7>& solution, ostream& o
     }
 }
 
-void outputSolution(const BoardPosition& startingPosition, const unordered_map<Line, pair<Point, Point>>& linesPoints, array<array<array<int, 7>, 7>, 7>& outputgrid) {
-    for (const Point& p : startingPosition.circles) {
+void outputSolution(const Board& startingPosition, const unordered_map<Line, pair<Point, Point>>& linesPoints, array<array<array<int, 7>, 7>, 7>& outputgrid) {
+    for (const Point& p : startingPosition.getCircles()) {
         outputgrid[p.x][p.y][p.z] = circle;
     }
-    for (const Point& p : startingPosition.crosses) {
+    for (const Point& p : startingPosition.getCrosses()) {
         outputgrid[p.x][p.y][p.z] = cross;
     }
     int i = 1;
@@ -143,11 +143,11 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
 }
 
 void tryCase(const vector<Point>& points) {
-    BoardPosition board;
+    Board board;
     try {
         GivenMovesPlayer gmp(points);
         PairingPreparer pp;
-        board = Match::play(gmp, pp, [&pp](const BoardPosition& board) { 
+        board = Match::play(gmp, pp, [&pp](const Board& board) { 
             (void)board;
             return pp.isFinished(); });
     } catch (const CannotPlayMoveException& e) {
@@ -163,16 +163,14 @@ void tryCase(const vector<Point>& points) {
     // todo handle invlaid BPM more nicely
     if (HC.rightPartiteSize() != matching_size) {
         cerr << "Insuficient matching" << endl
-             << board << endl;
+             << board.toString() << endl;
         throw;
     }
 
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
     array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-    std::stringstream ss;
-    ss << ouput_folder << board << ".txt";
-    std::string filename = ss.str();
+    std::string filename = ouput_folder + board.toString('_') + ".txt";
     std::ofstream fileStream(filename, std::ios::out);
     printSolution(solutionGrid, fileStream);
     fileStream.close();
