@@ -1,26 +1,27 @@
 #pragma once
 
+#include <iostream>
+#include <vector>
+
 #include "player.hpp"
 #include "utility.hpp"
 
-#include <vector>
-#include <iostream>
-
 using namespace std;
 
-struct ConsolePlayer : public Player{
-    ConsolePlayer(ostream & os, istream & is): os(os), is(is){}
+struct ConsolePlayer : public Player {
+    ConsolePlayer(ostream& os, istream& is) : os(os), is(is) {}
 
-    virtual Point play(const vector<Point> & playerStones, const vector<Point> & opponentStones){
+    virtual Point play(const vector<Point>& playerStones, const vector<Point>& opponentStones) {
         os << "Your stones are ";
         print(playerStones, os);
-        os  << " opponent stones are ";
+        os << " opponent stones are ";
         print(opponentStones, os);
-        os << "." << endl << "Your move: ";
+        os << "." << endl
+           << "Your move: ";
         return Point::loadPoint(is);
     }
-    
-    private:
-        ostream & os;
-        istream & is;
+
+   private:
+    ostream& os;
+    istream& is;
 };

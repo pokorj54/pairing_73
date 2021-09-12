@@ -1,34 +1,35 @@
 #pragma once
 
-#include "point.hpp"
-#include "player.hpp"
-#include "utility.hpp"
-
 #include <vector>
+
+#include "player.hpp"
+#include "point.hpp"
+#include "utility.hpp"
 
 using namespace std;
 
-struct PairingPreparer : public Player{
-    PairingPreparer():finished(false){}
-    virtual Point play(const vector<Point> & playerStones, const vector<Point> & opponentStones){
+struct PairingPreparer : public Player {
+    PairingPreparer() : finished(false) {}
+    virtual Point play(const vector<Point>& playerStones, const vector<Point>& opponentStones) {
         assert(opponentStones.size() == playerStones.size() + 1);
-        return opponentStones[0] == Point(3,3,3) ? diagonalsStrategy(playerStones, opponentStones): centerStrategy(playerStones, opponentStones);    
+        return opponentStones[0] == Point(3, 3, 3) ? diagonalsStrategy(playerStones, opponentStones) : centerStrategy(playerStones, opponentStones);
     }
 
-    bool isFinished() const{
+    bool isFinished() const {
         return finished;
     }
-private:
+
+   private:
     bool finished;
     vector<int> remainingLayers;
-    Point diagonalsStrategy(const vector<Point> & playerStones, const vector<Point> & opponentStones){
-        if(opponentStones.size() == 1){
+    Point diagonalsStrategy(const vector<Point>& playerStones, const vector<Point>& opponentStones) {
+        if (opponentStones.size() == 1) {
             remainingLayers = {1, 2, 4, 5, 6};  // without 0 (taken) and 3 (only center)
-            return Point(0,0,0);
+            return Point(0, 0, 0);
         }
         // ply 2,3 - easy main diagonal
-        if(opponentStones.size() < 4){
-            int lastLayer = opponentStones[opponentStones.size()-1].x;
+        if (opponentStones.size() < 4) {
+            int lastLayer = opponentStones[opponentStones.size() - 1].x;
             lastLayer = isInVector(remainingLayers, lastLayer) ? lastLayer : remainingLayers[0];
             remainingLayers.erase(remove(remainingLayers.begin(), remainingLayers.end(), lastLayer));
             vector<Point> possibleSpots = getPossibleSpots(lastLayer, opponentStones);
@@ -42,14 +43,14 @@ private:
         return next_stone;
     }
 
-    Point centerStrategy(const vector<Point> & playerStones, const vector<Point> & opponentStones){
-        if(opponentStones.size() == 1){
+    Point centerStrategy(const vector<Point>& playerStones, const vector<Point>& opponentStones) {
+        if (opponentStones.size() == 1) {
             remainingLayers = {0, 1, 2, 4, 5, 6};
-            return Point(3,3,3);
+            return Point(3, 3, 3);
         }
         // ply 2, any diagonal is ok
-        if(opponentStones.size() == 2){
-            int lastLayer = opponentStones[opponentStones.size()-1].x;
+        if (opponentStones.size() == 2) {
+            int lastLayer = opponentStones[opponentStones.size() - 1].x;
             lastLayer = isInVector(remainingLayers, lastLayer) ? lastLayer : remainingLayers[0];
             remainingLayers.erase(remove(remainingLayers.begin(), remainingLayers.end(), lastLayer));
             vector<Point> possibleSpots = getPossibleSpots(lastLayer, opponentStones);
@@ -87,19 +88,19 @@ private:
         return result;
     }
 
-    static bool areOnSameLine(const Point & p1, const Point & p2){
+    static bool areOnSameLine(const Point& p1, const Point& p2) {
         vector<int> differences;
-        if(p1.x != p2.x){
+        if (p1.x != p2.x) {
             differences.push_back(abs(p1.x - p2.x));
         }
-        if(p1.y != p2.y){
+        if (p1.y != p2.y) {
             differences.push_back(abs(p1.y - p2.y));
         }
-        if(p1.z != p2.z){
+        if (p1.z != p2.z) {
             differences.push_back(abs(p1.z - p2.z));
         }
-        for(int diff : differences){
-            if(diff != differences[0]){
+        for (int diff : differences) {
+            if (diff != differences[0]) {
                 return false;
             }
         }
@@ -108,7 +109,7 @@ private:
 
     static Point leastColinearPoint(const vector<Point>& placed_stones, const vector<Point>& candidates) {
         assert(candidates.size() > 0);
-        const Point * best_Point = nullptr; 
+        const Point* best_Point = nullptr;
         int lowest_colinearity = INT32_MAX;
         for (const Point& candidate : candidates) {
             int candidate_count = 0;

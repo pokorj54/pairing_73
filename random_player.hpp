@@ -1,29 +1,29 @@
 #pragma once
 
+#include <random>
+#include <vector>
+
 #include "player.hpp"
 #include "utility.hpp"
 
-#include <vector>
-#include <random>
-
 using namespace std;
 
-struct RandomPlayer : public Player{
-    RandomPlayer():distribution(0,6){
+struct RandomPlayer : public Player {
+    RandomPlayer() : distribution(0, 6) {
     }
 
-    virtual Point play(const vector<Point> & playerStones, const vector<Point> & opponentStones){
+    virtual Point play(const vector<Point>& playerStones, const vector<Point>& opponentStones) {
         Point generated = getRandomPoint();
-        while (isInVector(playerStones, generated) || isInVector(opponentStones, generated)){
+        while (isInVector(playerStones, generated) || isInVector(opponentStones, generated)) {
             generated = getRandomPoint();
         }
         return generated;
     }
-    
-    private:
-        Point getRandomPoint(){
-            return Point(distribution(gen),distribution(gen),distribution(gen));
-        }
+
+   private:
+    Point getRandomPoint() {
+        return Point(distribution(gen), distribution(gen), distribution(gen));
+    }
     uniform_int_distribution<int> distribution;
     random_device gen;
 };

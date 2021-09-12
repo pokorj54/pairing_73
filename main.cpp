@@ -1,20 +1,20 @@
 
-#include "board_position.hpp"
-#include "hopcroft_karp.hpp"
-#include "line.hpp"
-#include "point.hpp"
-#include "match.hpp"
-#include "console_player.hpp"
-#include "random_player.hpp"
-#include "given_moves_player.hpp"
-#include "pairing_preparer.hpp"
-#include "utility.hpp"
+#include <omp.h>
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 
-#include <omp.h>
+#include "board_position.hpp"
+#include "console_player.hpp"
+#include "given_moves_player.hpp"
+#include "hopcroft_karp.hpp"
+#include "line.hpp"
+#include "match.hpp"
+#include "pairing_preparer.hpp"
+#include "point.hpp"
+#include "random_player.hpp"
+#include "utility.hpp"
 
 using namespace std;
 
@@ -25,72 +25,71 @@ const int circle = -2;
 
 const vector<Line> ALL_CANONICAL_LINES = Line::generateAllCanonicalLines();
 
-vector<vector<Point>> toSolve; 
+vector<vector<Point>> toSolve;
 
-
-void iterateThroughAllBoardsByCase(const function<void(vector<Point>)> & f, bool firstCenter){
+void iterateThroughAllBoardsByCase(const function<void(vector<Point>)>& f, bool firstCenter) {
     vector<Point> moves = vector<Point>(3, Point::first());
-    while(true){
-        while(true){
-            while(true){
+    while (true) {
+        while (true) {
+            while (true) {
                 vector<Point> arguments;
-                if(firstCenter){
-                    arguments.push_back(Point(3,3,3));
+                if (firstCenter) {
+                    arguments.push_back(Point(3, 3, 3));
                 }
                 arguments.insert(arguments.end(), moves.begin(), moves.end());
                 f(arguments);
-                if(!moves[2].hasNext()){
+                if (!moves[2].hasNext()) {
                     moves[2] = Point::first();
                     break;
                 }
                 moves[2] = moves[2].next();
             }
-            if(!moves[1].hasNext()){
+            if (!moves[1].hasNext()) {
                 moves[1] = Point::first();
                 break;
             }
             moves[1] = moves[1].next();
-        }   
-        if(!moves[0].hasNext()){
+        }
+        if (!moves[0].hasNext()) {
             break;
         }
         moves[0] = moves[0].next();
-        if(moves[0] == Point(3,3,3)){
+        if (moves[0] == Point(3, 3, 3)) {
             moves[0] = moves[0].next();
         }
     }
 }
 
-void iterateThroughAllBoards(const function<void(vector<Point>)> & f){
+void iterateThroughAllBoards(const function<void(vector<Point>)>& f) {
     iterateThroughAllBoardsByCase(f, false);
     iterateThroughAllBoardsByCase(f, true);
 }
 
-vector<Line> getNoncoveredLines(const vector<Point> & blockingPoints){
+vector<Line> getNoncoveredLines(const vector<Point>& blockingPoints) {
     vector<Line> lines;
-    for(const Line & line: ALL_CANONICAL_LINES){
+    for (const Line& line : ALL_CANONICAL_LINES) {
         bool covered = false;
-        for(const Point & point : blockingPoints){
-            if(line.containsPoint(point)){
+        for (const Point& point : blockingPoints) {
+            if (line.containsPoint(point)) {
                 covered = true;
                 break;
             }
         }
-        if(!covered){
+        if (!covered) {
             lines.push_back(line);
         }
     }
     return lines;
 }
 
-HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition & board){
-    vector<Line> linesToCover =  getNoncoveredLines(board.circles);
-    
-    HopcroftKarp<Point, Line> hopcroftKarp = HopcroftKarp<Point, Line>(7*7*7 - board.pliesMade(),  linesToCover.size()*2);
-    for(const Line & line : linesToCover){
+HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition& board) {
+    vector<Line> linesToCover = getNoncoveredLines(board.circles);
+
+    HopcroftKarp<Point, Line> hopcroftKarp = HopcroftKarp<Point, Line>(7 * 7 * 7 - board.pliesMade(), linesToCover.size() * 2);
+    for (const Line& line : linesToCover) {
         Line flippedLine = line.getFlippedLine();
-        for(const Point & point : line.getPointsOnLine()){
-            if(isInVector(board.crosses, point)){ // circles are gone because, the lines containing them were filtered out
+        for (const Point& point : line.getPointsOnLine()) {
+            if (isInVector(board.crosses, point)) {  // circles are gone because, the lines containing them were filtered out
                 continue;
             }
             hopcroftKarp.addEdge(point, line);
@@ -100,11 +99,10 @@ HopcroftKarp<Point, Line> initializeHopcroftKarp(const BoardPosition & board){
     return hopcroftKarp;
 }
 
-
-void printSolution(const array<array<array<int, 7>,7>,7> & solution, ostream & os){
-    for(int i = 0; i < 7; ++i){
-        for(int j = 0; j < 7; ++j){
-            for(int k = 0; k < 7; ++k){
+void printSolution(const array<array<array<int, 7>, 7>, 7>& solution, ostream& os) {
+    for (int i = 0; i < 7; ++i) {
+        for (int j = 0; j < 7; ++j) {
+            for (int k = 0; k < 7; ++k) {
                 os << solution[i][j][k] << '\t';
             }
             os << endl;
@@ -113,30 +111,29 @@ void printSolution(const array<array<array<int, 7>,7>,7> & solution, ostream & o
     }
 }
 
-void outputSolution(const BoardPosition & startingPosition, const unordered_map<Line, pair<Point, Point>> & linesPoints, array<array<array<int, 7>,7>,7> & outputgrid){
-    for(const Point & p : startingPosition.circles){
+void outputSolution(const BoardPosition& startingPosition, const unordered_map<Line, pair<Point, Point>>& linesPoints, array<array<array<int, 7>, 7>, 7>& outputgrid) {
+    for (const Point& p : startingPosition.circles) {
         outputgrid[p.x][p.y][p.z] = circle;
     }
-    for(const Point & p : startingPosition.crosses){
+    for (const Point& p : startingPosition.crosses) {
         outputgrid[p.x][p.y][p.z] = cross;
     }
     int i = 1;
 
-    for(pair<Line, pair<Point, Point>> p : linesPoints){
+    for (pair<Line, pair<Point, Point>> p : linesPoints) {
         Point a = p.second.first;
         Point b = p.second.second;
         outputgrid[a.x][a.y][a.z] = i + 1;
         outputgrid[b.x][b.y][b.z] = i + 1;
         ++i;
     }
-    
 }
 
-unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<Line, Point> & linePoints){
+unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<Line, Point>& linePoints) {
     unordered_map<Line, pair<Point, Point>> result;
-    for(pair<Line, Point> p : linePoints){
+    for (pair<Line, Point> p : linePoints) {
         Line line = p.first;
-        if(!line.isCanonical()){
+        if (!line.isCanonical()) {
             continue;
         }
         Line complementLine = line.getFlippedLine();
@@ -145,33 +142,33 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
     return result;
 }
 
-void tryCase(const vector<Point> & points){
+void tryCase(const vector<Point>& points) {
     BoardPosition board;
-    try{
+    try {
         GivenMovesPlayer gmp(points);
         PairingPreparer pp;
-        board = Match::play(gmp, pp, [&pp](const BoardPosition & board){ 
+        board = Match::play(gmp, pp, [&pp](const BoardPosition& board) { 
             (void)board;
-            return pp.isFinished();}
-        );
-    }catch(const CannotPlayMoveException & e){
+            return pp.isFinished(); });
+    } catch (const CannotPlayMoveException& e) {
         cerr << "Invalid sequence ";
         print(points, cerr);
         cerr << endl;
         return;
     }
-    
+
     HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
     size_t matching_size = HC.maxBipartiteMatching();
 
-    // todo handle invlaid BPM more nicely 
-    if(HC.rightPartiteSize() != matching_size){
-        cerr << "Insuficient matching" << endl << board << endl;
+    // todo handle invlaid BPM more nicely
+    if (HC.rightPartiteSize() != matching_size) {
+        cerr << "Insuficient matching" << endl
+             << board << endl;
         throw;
     }
-    
+
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
-    array<array<array<int, 7>,7>,7> solutionGrid = {0};
+    array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
     std::stringstream ss;
     ss << ouput_folder << board << ".txt";
@@ -181,21 +178,21 @@ void tryCase(const vector<Point> & points){
     fileStream.close();
 }
 
-void putToVector(const vector<Point> & points){
+void putToVector(const vector<Point>& points) {
     toSolve.push_back(points);
 }
 
-int main(void){
+int main(void) {
     //todo set by number of system cores
     omp_set_num_threads(8);
     cout << "threads: " << omp_get_num_threads() << endl;
 
     cout << "Creating all cases" << endl;
     iterateThroughAllBoards(putToVector);
-    cout << "Cases created: " <<  toSolve.size() << endl;
+    cout << "Cases created: " << toSolve.size() << endl;
 
-    #pragma omp parallel for schedule(static, 1)
-    for(size_t i = 0; i < toSolve.size(); ++i){
+#pragma omp parallel for schedule(static, 1)
+    for (size_t i = 0; i < toSolve.size(); ++i) {
         tryCase(toSolve[i]);
     }
 
