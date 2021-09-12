@@ -1,5 +1,7 @@
 #include "board.hpp"
 
+#include <cassert>
+
 using namespace std;
 
 size_t Board::pliesMade() const {
