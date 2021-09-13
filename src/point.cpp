@@ -39,7 +39,7 @@ Point Point::loadPoint(istream& is) {
     char x, y, z;
     cin >> x >> y >> z;
     assert(is.good());
-    return Point(x, y, z);
+    return Point(x - '0', y - '0', z - '0');
 }
 
 string Point::toString() const {

@@ -170,7 +170,7 @@ void tryCase(const vector<Point>& points) {
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
     array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
     outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-    std::string filename = ouput_folder + board.toString('_') + ".txt";
+    std::string filename = ouput_folder + board.nameFile();
     std::ofstream fileStream(filename, std::ios::out);
     printSolution(solutionGrid, fileStream);
     fileStream.close();
