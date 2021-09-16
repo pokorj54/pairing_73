@@ -3,5 +3,5 @@
 #include "point.hpp"
 
 struct Player {
-    virtual Point play(const vector<Point>& playerStones, const vector<Point>& opponentStones) = 0;
+    virtual Point play(const std::vector<Point>& playerStones, const std::vector<Point>& opponentStones) = 0;
 };
