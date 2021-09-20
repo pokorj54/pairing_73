@@ -1,8 +1,14 @@
 #include "point_utility.hpp"
 
 #include <cassert>
+#include <unordered_set>
+#include <vector>
 
 using namespace std;
+template <typename T>
+unordered_set<T> toSet(const vector<T>& v) {
+    return unordered_set<Point>(v.begin(), v.end());
+}
 
 int main(void) {
     assert(flip(0) == 6);
@@ -27,4 +33,32 @@ int main(void) {
     assert(!areOnSameLine(Point(2, 5, 2), Point(5, 2, 5)));
     assert(!areOnSameLine(Point(2, 1, 0), Point(5, 4, 0)));
     assert(!areOnSameLine(Point(3, 4, 5), Point(2, 1, 0)));
+
+    assert(getPossiblePoints(0, {Point(0, 0, 0), Point(0, 6, 0), Point(0, 0, 6), Point(0, 6, 6)}) == vector<Point>());
+    assert(getPossiblePoints(0, {Point(0, 0, 0), Point(0, 6, 0), Point(0, 0, 6)}) == vector<Point>({Point(0, 6, 6)}));
+    assert(toSet(getPossiblePoints(1, {Point(1, 1, 1), Point(1, 5, 5)})) == unordered_set<Point>({Point(1, 1, 5), Point(1, 5, 1)}));
+    assert(toSet(getPossiblePoints(2, {Point(2, 4, 4)})) == unordered_set<Point>({Point(2, 2, 2), Point(2, 4, 2), Point(2, 2, 4)}));
+    assert(toSet(getPossiblePoints(2, {Point(2, 4, 4)})) == unordered_set<Point>({Point(2, 2, 2), Point(2, 4, 2), Point(2, 2, 4)}));
+    assert(toSet(getPossiblePoints(3, {Point(1, 2, 3), Point(3, 2, 2)})) == unordered_set<Point>({Point(3, 3, 3)}));
+    assert(toSet(getPossiblePoints(4, {
+                                          Point(4, 0, 1),
+                                          Point(4, 4, 1),
+                                          Point(4, 2, 2),
+                                      })) == unordered_set<Point>({
+                                                 Point(4, 4, 4),
+                                                 Point(4, 2, 4),
+                                                 Point(4, 4, 2),
+                                             }));
+    assert(toSet(getPossiblePoints(5, {
+                                          Point(1, 5, 1),
+                                          Point(5, 4, 1),
+                                          Point(5, 5, 3),
+                                      })) == unordered_set<Point>({
+                                                 Point(5, 5, 5),
+                                                 Point(5, 1, 5),
+                                                 Point(5, 1, 1),
+                                                 Point(5, 5, 1),
+                                             }));
+
+    return 0;
 }

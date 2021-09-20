@@ -16,6 +16,9 @@ vector<Point> getPossiblePoints(int layer, const vector<Point>& obstructions) {
         Point(layer, layer, flip(layer)),
         Point(layer, flip(layer), layer),
         Point(layer, flip(layer), flip(layer))};
+    if (layer == 3) {
+        spots = {Point(3, 3, 3)};
+    }
     vector<Point> result;
     for (const Point& spot : spots) {
         if (!isInVector(obstructions, spot)) {
