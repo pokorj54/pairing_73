@@ -31,18 +31,29 @@ vector<Point> getPossiblePoints(const vector<int>& layers, const vector<Point>& 
 }
 
 bool areOnSameLine(const Point& p1, const Point& p2) {
-    vector<int> differences;
-    if (p1.x != p2.x) {
-        differences.push_back(abs(p1.x - p2.x));
+    if (p1 == p2) {
+        return true;
     }
-    if (p1.y != p2.y) {
-        differences.push_back(abs(p1.y - p2.y));
-    }
-    if (p1.z != p2.z) {
-        differences.push_back(abs(p1.z - p2.z));
-    }
-    for (int diff : differences) {
-        if (diff != differences[0]) {
+    vector<int> differences;  // differences in moving coordinates must be same
+    vector<int> valuesp1, valuesp2;
+    function<void(int, int)> lambda = [&differences, &valuesp1, &valuesp2](int a, int b) {
+        if (a != b) {
+            differences.push_back(abs(a - b));
+            if (a > 3) {
+                a = 6 - a;
+            }
+            if (b > 3) {
+                b = 6 - b;
+            }
+            valuesp1.push_back(a);
+            valuesp2.push_back(b);
+        }
+    };
+    lambda(p1.x, p2.x);
+    lambda(p1.y, p2.y);
+    lambda(p1.z, p2.z);
+    for (size_t i = 0; i < differences.size(); ++i) {
+        if (differences[i] != differences[0] || valuesp1[i] != valuesp1[0] || valuesp2[i] != valuesp2[0]) {
             return false;
         }
     }
