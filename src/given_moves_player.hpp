@@ -6,10 +6,17 @@
 #include "utility.hpp"
 
 using namespace std;
-
+/**
+ * @brief Exception signaling that GivenMovePlayer cannot play according given moves
+ * 
+ */
 struct CannotPlayMoveException : public exception {
 };
 
+/**
+ * @brief Player that is given sequence of points (moves) and plays it's ith ply as a the ith given point 
+ * 
+ */
 struct GivenMovesPlayer : Player {
     GivenMovesPlayer(const vector<Point>& moves) : moves(moves) {}
 

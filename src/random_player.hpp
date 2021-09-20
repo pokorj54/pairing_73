@@ -8,6 +8,10 @@
 
 using namespace std;
 
+/**
+ * @brief Player that plays to random points
+ * 
+ */
 struct RandomPlayer : public Player {
     RandomPlayer() : distribution(0, 6) {
     }

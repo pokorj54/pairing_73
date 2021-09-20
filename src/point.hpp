@@ -13,12 +13,34 @@ struct Point {
 
     bool operator==(const Point& o) const;
 
+    /**
+     * @brief First point of order on points
+     * 
+     * @return Point 
+     */
     static Point first();
 
+    /**
+     * @brief Determines if next element in ordering started by first() and continued by sequence of next() exist
+     * 
+     * @return true this point has next
+     * @return false this point does not have next
+     */
     bool hasNext() const;
 
+    /**
+     * @brief Advances to next element in ordering started by first()
+     * 
+     * @return Point the point after this point in the point ordering started by first() and continuesd by next()
+     */
     Point next() const;
 
+    /**
+     * @brief loads point from input stream
+     * 
+     * @param is Input stream from the point is read
+     * @return Point the read point
+     */
     static Point loadPoint(std::istream& is);
 
     std::string toString() const;
