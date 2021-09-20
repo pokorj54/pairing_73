@@ -6,12 +6,16 @@
 
 using namespace std;
 
+int flip(int a) {
+    return 7 - a - 1;
+}
+
 vector<Point> getPossiblePoints(int layer, const vector<Point>& obstructions) {
     vector<Point> spots = {
         Point(layer, layer, layer),
-        Point(layer, layer, 7 - layer - 1),
-        Point(layer, 7 - layer - 1, layer),
-        Point(layer, 7 - layer - 1, 7 - layer - 1)};
+        Point(layer, layer, flip(layer)),
+        Point(layer, flip(layer), layer),
+        Point(layer, flip(layer), flip(layer))};
     vector<Point> result;
     for (const Point& spot : spots) {
         if (!isInVector(obstructions, spot)) {
@@ -39,12 +43,8 @@ bool areOnSameLine(const Point& p1, const Point& p2) {
     function<void(int, int)> lambda = [&differences, &valuesp1, &valuesp2](int a, int b) {
         if (a != b) {
             differences.push_back(abs(a - b));
-            if (a > 3) {
-                a = 6 - a;
-            }
-            if (b > 3) {
-                b = 6 - b;
-            }
+            a = a > 3 ? flip(a) : a;
+            b = b > 3 ? flip(b) : b;
             valuesp1.push_back(a);
             valuesp2.push_back(b);
         }

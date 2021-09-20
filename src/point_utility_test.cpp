@@ -5,7 +5,16 @@
 using namespace std;
 
 int main(void) {
+    assert(flip(0) == 6);
+    assert(flip(1) == 5);
+    assert(flip(2) == 4);
+    assert(flip(3) == 3);
+    assert(flip(4) == 2);
+    assert(flip(5) == 1);
+    assert(flip(6) == 0);
+
     assert(areOnSameLine(Point(0, 0, 0), Point(1, 1, 1)));
+    assert(areOnSameLine(Point(0, 0, 0), Point(0, 0, 0)));
     assert(areOnSameLine(Point(3, 2, 6), Point(3, 2, 4)));
     assert(areOnSameLine(Point(3, 3, 3), Point(1, 5, 1)));
     assert(areOnSameLine(Point(2, 4, 2), Point(4, 2, 4)));
