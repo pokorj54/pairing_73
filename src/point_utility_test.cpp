@@ -60,5 +60,39 @@ int main(void) {
                                                  Point(5, 5, 1),
                                              }));
 
+    assert(getPossiblePoints(vector<int>(), {Point(1, 5, 2), Point(4, 4, 6)}) == vector<Point>());
+
+    assert(getPossiblePoints({0}, {Point(0, 0, 0), Point(0, 6, 0), Point(0, 0, 6), Point(0, 6, 6)}) == vector<Point>());
+    assert(getPossiblePoints({0}, {Point(0, 0, 0), Point(0, 6, 0), Point(0, 0, 6)}) == vector<Point>({Point(0, 6, 6)}));
+    assert(toSet(getPossiblePoints({1}, {Point(1, 1, 1), Point(1, 5, 5)})) == unordered_set<Point>({Point(1, 1, 5), Point(1, 5, 1)}));
+    assert(toSet(getPossiblePoints({2}, {Point(2, 4, 4)})) == unordered_set<Point>({Point(2, 2, 2), Point(2, 4, 2), Point(2, 2, 4)}));
+    assert(toSet(getPossiblePoints({2}, {Point(2, 4, 4)})) == unordered_set<Point>({Point(2, 2, 2), Point(2, 4, 2), Point(2, 2, 4)}));
+    assert(toSet(getPossiblePoints({3}, {Point(1, 2, 3), Point(3, 2, 2)})) == unordered_set<Point>({Point(3, 3, 3)}));
+
+    assert(toSet(getPossiblePoints({3, 4}, {Point(4, 1, 4), Point(4, 2, 2)})) == unordered_set<Point>({
+                                                                                     Point(3, 3, 3),
+                                                                                     Point(4, 4, 4),
+                                                                                     Point(4, 2, 4),
+                                                                                     Point(4, 4, 2),
+                                                                                 }));
+
+    assert(toSet(getPossiblePoints({0, 2, 4}, {Point(1, 1, 5),
+                                               Point(1, 1, 1),
+                                               Point(4, 2, 2),
+                                               Point(6, 6, 6),
+                                               Point(2, 2, 2),
+                                               Point(6, 6, 0)})) == unordered_set<Point>({
+                                                                        Point(0, 0, 0),
+                                                                        Point(0, 6, 0),
+                                                                        Point(0, 0, 6),
+                                                                        Point(0, 6, 6),
+                                                                        Point(2, 2, 4),
+                                                                        Point(2, 4, 2),
+                                                                        Point(2, 4, 4),
+                                                                        Point(4, 4, 4),
+                                                                        Point(4, 2, 4),
+                                                                        Point(4, 4, 2),
+                                                                    }));
+
     return 0;
 }
