@@ -94,5 +94,13 @@ int main(void) {
                                                                         Point(4, 4, 2),
                                                                     }));
 
+    assert(getLeastColinearPoint({Point(3, 3, 3)}, {Point(1, 1, 1)}) == Point(1, 1, 1));
+    assert(getLeastColinearPoint({Point(3, 3, 3), Point(6, 6, 6)}, {Point(0, 0, 6), Point(0, 6, 0), Point(1, 5, 1)}) == Point(1, 5, 1));
+    assert(getLeastColinearPoint({Point(3, 3, 3), Point(6, 6, 6)}, {Point(0, 0, 6), Point(0, 6, 0), Point(1, 5, 1)}) == Point(1, 5, 1));
+    assert(getLeastColinearPoint({Point(0, 0, 0),
+                                  Point(1, 5, 1),
+                                  Point(2, 4, 4)},
+                                 {Point(2, 2, 2), Point(5, 1, 5), Point(1, 1, 1)}) == Point(5, 1, 5));
+
     return 0;
 }
