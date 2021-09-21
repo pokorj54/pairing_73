@@ -7,96 +7,78 @@
 
 using namespace std;
 
-/*
-* Represents a winning line in 7^3
-*/
+/**
+ * @brief Represents a winning line in 7^3
+ * 
+ */
 struct Line {
+    /**
+     * @brief Constant representing increasing coordinate of a line
+     * 
+     */
     static const int increasing = -1;
+
+    /**
+     * @brief Constant representing decreasing coordinate of a line
+     * 
+     */
     static const int decreasing = 7;
 
     int x, y, z;
-    Line(int x, int y, int z) : x(x), y(y), z(z) {
-        assert(x >= -1 && x <= 7);
-        assert(y >= -1 && y <= 7);
-        assert(z >= -1 && z <= 7);
-        assert(!isConstant(x) || !isConstant(y) || !isConstant(z));
-    }
+    Line(int x, int y, int z);
 
-    vector<Point> getPointsOnLine() const {
-        vector<Point> result;
-        int a = x;
-        int b = y;
-        int c = z;
-        for (int i = 0; i < 7; ++i) {
-            if (x == increasing) {
-                ++a;
-            } else if (x == decreasing) {
-                --a;
-            }
-            if (y == increasing) {
-                ++b;
-            } else if (y == decreasing) {
-                --b;
-            }
-            if (z == increasing) {
-                ++c;
-            } else if (z == decreasing) {
-                --c;
-            }
-            result.push_back(Point(a, b, c));
-        }
-        return result;
-    }
+    /**
+     * @brief Gets all points that lies on this line
+     * 
+     * @return vector<Point> all those points
+     */
+    vector<Point> getPointsOnLine() const;
 
-    bool containsPoint(const Point& point) const {
-        for (const Point& p : getPointsOnLine()) {
-            if (p == point) {
-                return true;
-            }
-        }
-        return false;
-    }
+    /**
+     * @brief Calculates whether point lies on this line
+     * 
+     * @param point Point in question
+     * @return true if the point lies on this line
+     * @return false if the point does not lie on this line
+     */
+    bool containsPoint(const Point& point) const;
 
-    static vector<Line> generateAllCanonicalLines() {
-        vector<Line> result;
-        for (int i = -1; i <= 7; ++i) {
-            for (int j = -1; j <= 7; ++j) {
-                for (int k = -1; k <= 7; ++k) {
-                    if (isConstant(i) && isConstant(j) && isConstant(k)) {
-                        continue;
-                    }
-                    Line l = Line(i, j, k);
-                    if (l.isCanonical()) {
-                        result.push_back(l);
-                    }
-                }
-            }
-        }
-        return result;
-    }
+    static vector<Line> generateAllCanonicalLines();
 
-    bool operator==(const Line& o) const {
-        return x == o.x && y == o.y && z == o.z;
-    }
+    bool operator==(const Line& o) const;
 
-    bool isCanonical() const {
-        return (x == increasing) || (x != decreasing && y == increasing) || (x != decreasing && y != decreasing && z == increasing);
-    }
+    /**
+     * @brief Determines if current representation is cannonical. For each line exists 2 representations, it is guaranteed than exactly one of them is canonical
+     * 
+     * @return true if it is canonical representation of the representing line
+     * @return false if it is not canonical representation of the representing line
+     */
+    bool isCanonical() const;
 
-    /*
-    * Returns new line that covers the same points but is flipped ( increasing -> decreasing and vice versa)
+    /**
+     * @brief Gets line representing the same line but directions are swapped
+     * 
+     * @return Returns line that covers the same points but is flipped ( increasing -> decreasing and vice versa) 
+     */
+    Line getFlippedLine() const;
+
+   private:
+    /**
+    * @brief Determines whether coordinate of line is constant
+    * 
+    * @param a coordinate of a line
+    * @return true the coordinate is constant (0, ..., 6)
+    * @return false the coordinate is not constant (increasing or decreasing)
     */
-    Line getFlippedLine() const {
-        return Line(flipDirection(x), flipDirection(y), flipDirection(z));
-    }
+    static bool isConstant(int a);
 
-    static bool isConstant(int a) {
-        return a >= 0 && a < 7;
-    }
-
-    static int flipDirection(int a) {
-        return a == increasing ? decreasing : (a == decreasing ? increasing : a);
-    }
+    /**
+     * @brief Flips direction of a coordinate of a line (increasing to decreasing and vice versa)
+     * 
+     * @param a coordinate of a line
+     * @return int flipped coordinate
+     */
+    static int flipDirection(int a);
 };
 
 namespace std {

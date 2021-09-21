@@ -9,7 +9,7 @@
  */
 struct Match {
     /**
-     * @brief 
+     * @brief Provides match between first and second player until condition should_end is met
      * 
      * @param first Player who playes first 
      * @param second Player who plays second
