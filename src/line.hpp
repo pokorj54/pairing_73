@@ -43,9 +43,21 @@ struct Line {
      */
     bool containsPoint(const Point& point) const;
 
+    /**
+     * @brief generates all winning lines on 7^3, all of them in cannonical form 
+     * 
+     * @return vector<Line> alll the winning lines
+     */
     static vector<Line> generateAllCanonicalLines();
 
-    bool operator==(const Line& o) const;
+    /**
+     * @brief Equality on lines representations, every line representation is it's own class (cannonical and the second form is different object)
+     * 
+     * @param other second line to compare with
+     * @return true if this and the other line are identical lines in identical representations
+     * @return false else
+     */
+    bool operator==(const Line& other) const;
 
     /**
      * @brief Determines if current representation is cannonical. For each line exists 2 representations, it is guaranteed than exactly one of them is canonical
@@ -62,7 +74,6 @@ struct Line {
      */
     Line getFlippedLine() const;
 
-   private:
     /**
     * @brief Determines whether coordinate of line is constant
     * 
