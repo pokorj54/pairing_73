@@ -193,9 +193,14 @@ void putToVector(const vector<Point>& points) {
     toSolve.push_back(points);
 }
 
+void createDirectories(const string& str) {
+    string argument = string("mkdir -p ") + str;
+    system(argument.c_str());
+}
+
 int main(int argc, char** args) {
-    std::filesystem::create_directories(ouput_folder);
-    std::filesystem::create_directories(errors_folder);
+    createDirectories(ouput_folder);
+    createDirectories(errors_folder);
     //todo set by number of system cores
     if (argc == 2) {
         omp_set_num_threads(atoi(args[1]));
