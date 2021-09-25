@@ -1,6 +1,7 @@
 
 #include <omp.h>
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -19,6 +20,7 @@
 using namespace std;
 
 const string ouput_folder = "positions/";
+const string errors_folder = "error_out/";
 
 const int cross = -1;
 const int circle = -2;
@@ -142,6 +144,19 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
     return result;
 }
 
+ostream* thread_err_output = nullptr;
+#pragma omp threadprivate(thread_err_output)
+
+void initialize_thread_err_output() {
+    thread_err_output = new std::ofstream(errors_folder + "e" + std::to_string(omp_get_thread_num()) + ".txt", std::ios::out);
+}
+
+void print_invalid_sequence(const vector<Point>& points) {
+    *thread_err_output << "Invalid sequence ";
+    print(points, *thread_err_output);
+    *thread_err_output << endl;
+}
+
 void tryCase(const vector<Point>& points) {
     Board board;
     try {
@@ -151,9 +166,7 @@ void tryCase(const vector<Point>& points) {
             (void)board;
             return pp.isFinished(); });
     } catch (const CannotPlayMoveException& e) {
-        cerr << "Invalid sequence ";
-        print(points, cerr);
-        cerr << endl;
+        print_invalid_sequence(points);
         return;
     }
 
@@ -162,8 +175,8 @@ void tryCase(const vector<Point>& points) {
 
     // todo handle invlaid BPM more nicely
     if (HC.rightPartiteSize() != matching_size) {
-        cerr << "Insuficient matching" << endl
-             << board.toString() << endl;
+        *thread_err_output << "Insuficient matching" << endl
+                           << board.toString() << endl;
         throw;
     }
 
@@ -180,16 +193,28 @@ void putToVector(const vector<Point>& points) {
     toSolve.push_back(points);
 }
 
-int main(void) {
+int main(int argc, char** args) {
+    std::filesystem::create_directories(ouput_folder);
+    std::filesystem::create_directories(errors_folder);
     //todo set by number of system cores
-    omp_set_num_threads(8);
+    if (argc == 2) {
+        omp_set_num_threads(atoi(args[1]));
+    } else {
+        cerr << "Insufficient number of arguments, expected number of threads" << endl;
+        return 1;
+    }
+#pragma omp parallel
+    initialize_thread_err_output();
+
+#pragma omp parallel
+#pragma omp single
     cout << "threads: " << omp_get_num_threads() << endl;
 
     cout << "Creating all cases" << endl;
     iterateThroughAllBoards(putToVector);
     cout << "Cases created: " << toSolve.size() << endl;
 
-#pragma omp parallel for schedule(static, 1)
+#pragma omp parallel for schedule(static, 16)
     for (size_t i = 0; i < toSolve.size(); ++i) {
         tryCase(toSolve[i]);
     }
