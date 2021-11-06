@@ -175,7 +175,7 @@ void tryCase(const vector<Point>& points) {
     array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
     solutio_to_grid(board, aggregateLinePoints(linesPartite), solutionGrid);
 
-    //#pragma omp critical
+#pragma omp critical
     sqlOutputer.outputSolution(solutionGrid, board);
     // FileOutputer fileOutputer(output_folder);
     // fileOutputer.outputSolution(solutionGrid, board);
