@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <set>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -71,3 +72,5 @@ template <typename T>
 void print(T t, ostream& os) {
     _print(t, os);
 }
+
+string solution_to_string(const array<array<array<int, 7>, 7>, 7>& solution);

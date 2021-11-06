@@ -16,8 +16,8 @@
 #include "pairing_preparer.hpp"
 #include "point.hpp"
 #include "random_player.hpp"
+#include "sql_outputer.hpp"
 #include "utility.hpp"
-
 using namespace std;
 
 const string output_folder = "positions/";
@@ -29,6 +29,8 @@ const int circle = -2;
 const vector<Line> ALL_CANONICAL_LINES = Line::generateAllCanonicalLines();
 
 vector<vector<Point>> toSolve;
+
+SQLOutputer sqlOutputer(output_folder + "DB");
 
 void iterateThroughAllBoardsByCase(const function<void(vector<Point>)>& f, bool firstCenter) {
     vector<Point> moves = vector<Point>(3, Point::first());
@@ -173,8 +175,10 @@ void tryCase(const vector<Point>& points) {
     array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
     solutio_to_grid(board, aggregateLinePoints(linesPartite), solutionGrid);
 
-    FileOutputer fileOutputer(output_folder);
-    fileOutputer.outputSolution(solutionGrid, board);
+    //#pragma omp critical
+    sqlOutputer.outputSolution(solutionGrid, board);
+    // FileOutputer fileOutputer(output_folder);
+    // fileOutputer.outputSolution(solutionGrid, board);
 }
 
 void putToVector(const vector<Point>& points) {
@@ -187,8 +191,6 @@ void createDirectories(const string& str) {
 }
 
 int main(int argc, char** args) {
-    createDirectories(output_folder);
-    createDirectories(errors_folder);
     //todo set by number of system cores
     if (argc == 2) {
         omp_set_num_threads(atoi(args[1]));
@@ -196,6 +198,10 @@ int main(int argc, char** args) {
         cerr << "Insufficient number of arguments, expected number of threads" << endl;
         return 1;
     }
+    createDirectories(output_folder);
+    createDirectories(errors_folder);
+    sqlOutputer.initialize_DB();
+
 #pragma omp parallel
     initialize_thread_err_output();
 

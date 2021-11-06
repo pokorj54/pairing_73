@@ -1,7 +1,7 @@
 # Supreme Makefile by Václav Blažej
 
 CC = g++
-CXXFLAGS = --std=c++17 -Wall -Wextra -pedantic -g -O3 -fopenmp
+CXXFLAGS = --std=c++17 -Wall -Wextra -pedantic -g -O3 -fopenmp -l sqlite3 
 DEPFLAGS     = -MT $@ -MMD -MP -MF ./build/$*.d
 
 
