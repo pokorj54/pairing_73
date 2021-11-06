@@ -30,10 +30,6 @@ struct Board {
 
     std::string toString(char delimiter = ' ') const;
 
-    string nameFile() const {
-        return toString('_') + ".txt";
-    }
-
    private:
     vector<Point> crosses, circles;
 };

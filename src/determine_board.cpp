@@ -9,10 +9,10 @@
 using namespace std;
 
 int main(void) {
-    ConsolePlayer cp(cout, cin);
+    ConsolePlayer cp(cout, cerr, cin);
     PairingPreparer pp;
     Board board = Match::play(cp, pp, [&pp](const Board& board) { 
             (void)board;
             return pp.isFinished(); });
-    cout << board.nameFile() << endl;
+    cerr << board.toString('_') << endl;
 }
