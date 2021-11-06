@@ -135,6 +135,23 @@ unordered_map<Line, pair<Point, Point>> aggregateLinePoints(const unordered_map<
     return result;
 }
 
+array<array<array<int, 7>, 7>, 7> compute_matching(const Board& board) {
+    HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
+    size_t matching_size = HC.maxBipartiteMatching();
+
+    // todo handle invlaid BPM more nicely
+    if (HC.rightPartiteSize() != matching_size) {
+        cerr << "Insuficient matching" << endl
+             << board.toString() << endl;
+        throw;
+    }
+
+    unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
+    array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
+    solutio_to_grid(board, aggregateLinePoints(linesPartite), solutionGrid);
+    return solutionGrid;
+}
+
 ostream* thread_err_output = nullptr;
 #pragma omp threadprivate(thread_err_output)
 
@@ -148,7 +165,7 @@ void print_invalid_sequence(const vector<Point>& points) {
     *thread_err_output << endl;
 }
 
-void tryCase(const vector<Point>& points) {
+void doCase(const vector<Point>& points) {
     Board board;
     try {
         GivenMovesPlayer gmp(points);
@@ -161,24 +178,20 @@ void tryCase(const vector<Point>& points) {
         return;
     }
 
-    HopcroftKarp<Point, Line> HC = initializeHopcroftKarp(board);
-    size_t matching_size = HC.maxBipartiteMatching();
-
-    // todo handle invlaid BPM more nicely
-    if (HC.rightPartiteSize() != matching_size) {
-        *thread_err_output << "Insuficient matching" << endl
-                           << board.toString() << endl;
-        throw;
-    }
-
-    unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
-    array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
-    solutio_to_grid(board, aggregateLinePoints(linesPartite), solutionGrid);
+    array<array<array<int, 7>, 7>, 7> solutionGrid = compute_matching(board);
 
 #pragma omp critical
     sqlOutputer.outputSolution(solutionGrid, board);
-    // FileOutputer fileOutputer(output_folder);
-    // fileOutputer.outputSolution(solutionGrid, board);
+}
+
+void tryCase(const vector<Point>& points) {
+    try {
+        doCase(points);
+    } catch (const std::exception& e) {
+        cerr << e.what() << '\n';
+        print(points, cerr);
+        cerr << endl;
+    }
 }
 
 void putToVector(const vector<Point>& points) {
