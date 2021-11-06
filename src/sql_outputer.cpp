@@ -31,11 +31,15 @@ void SQLOutputer::insertAllToDatabase() {
             cerr << board.toString() << endl;
             cerr << solution_to_string(solutionGrid) << endl;
             sqlite3_free(messageError);
-        } else {
-            cout << "Records inserted successfully!" << endl;
         }
     }
-    sqlite3_exec(DB, "END TRANSACTION;", NULL, NULL, NULL);
+    exit = sqlite3_exec(DB, "END TRANSACTION;", NULL, NULL, NULL);
+    if (exit != SQLITE_OK) {
+        cerr << "Error when commiting transaction." << endl;
+        sqlite3_free(messageError);
+    } else {
+        cout << "Transaction finished successfully!" << endl;
+    }
     sqlite3_close(DB);
     buffer.clear();
 }
