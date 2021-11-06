@@ -8,6 +8,7 @@
 
 #include "board.hpp"
 #include "console_player.hpp"
+#include "file_outputer.hpp"
 #include "given_moves_player.hpp"
 #include "hopcroft_karp.hpp"
 #include "line.hpp"
@@ -19,7 +20,7 @@
 
 using namespace std;
 
-const string ouput_folder = "positions/";
+const string output_folder = "positions/";
 const string errors_folder = "error_out/";
 
 const int cross = -1;
@@ -101,19 +102,7 @@ HopcroftKarp<Point, Line> initializeHopcroftKarp(const Board& board) {
     return hopcroftKarp;
 }
 
-void printSolution(const array<array<array<int, 7>, 7>, 7>& solution, ostream& os) {
-    for (int i = 0; i < 7; ++i) {
-        for (int j = 0; j < 7; ++j) {
-            for (int k = 0; k < 7; ++k) {
-                os << solution[i][j][k] << '\t';
-            }
-            os << endl;
-        }
-        os << endl;
-    }
-}
-
-void outputSolution(const Board& startingPosition, const unordered_map<Line, pair<Point, Point>>& linesPoints, array<array<array<int, 7>, 7>, 7>& outputgrid) {
+void solutio_to_grid(const Board& startingPosition, const unordered_map<Line, pair<Point, Point>>& linesPoints, array<array<array<int, 7>, 7>, 7>& outputgrid) {
     for (const Point& p : startingPosition.getCircles()) {
         outputgrid[p.x][p.y][p.z] = circle;
     }
@@ -182,11 +171,10 @@ void tryCase(const vector<Point>& points) {
 
     unordered_map<Line, Point> linesPartite = HC.getRightPartiteMatching();
     array<array<array<int, 7>, 7>, 7> solutionGrid = {0};
-    outputSolution(board, aggregateLinePoints(linesPartite), solutionGrid);
-    std::string filename = ouput_folder + board.nameFile();
-    std::ofstream fileStream(filename, std::ios::out);
-    printSolution(solutionGrid, fileStream);
-    fileStream.close();
+    solutio_to_grid(board, aggregateLinePoints(linesPartite), solutionGrid);
+
+    FileOutputer fileOutputer(output_folder);
+    fileOutputer.outputSolution(solutionGrid, board);
 }
 
 void putToVector(const vector<Point>& points) {
@@ -199,7 +187,7 @@ void createDirectories(const string& str) {
 }
 
 int main(int argc, char** args) {
-    createDirectories(ouput_folder);
+    createDirectories(output_folder);
     createDirectories(errors_folder);
     //todo set by number of system cores
     if (argc == 2) {
