@@ -43,14 +43,21 @@ If you already have the database (it is in `positions/DB`) you have two options,
 ### Prepared tools for verification
 I tried to do the programs for verification as simple as possible to be able easy to understand. And hence together they are not very fast if you want to process all the pairing strategies.
 
+For you to be able to run some of the following programs you have to run `make` and then run `exe/program`, where program is the name of the program without the `.cpp` suffix.
+
 - `determine_board.cpp`
  - Interactive command line program that for the first player moves responds with second player moves and after enough moves are playd it will tell you the name of a starting position for which you can find the pairing strategy in the database.
 - `determine_board_pc.cpp`
  - Same as `determine_board.cpp`, but it is not interactive. All the moves of first player are put as arguments of the program and then the program just answers the name or that the position is invalid.
 - `position_selector.cpp`
  - With the name of the starting position it will find the pairing strategy in the database and print it.
+- `calculate_strategy.cpp`
+  - For only 3 or 4 moves (see Which positions have to be verified) of the first player it will calculate the pairing strategy and print it. Similar as if used `determine_board.cpp` and then the ouputed gived to `position_selector.cpp`.
 - `verifier.cpp` 
  - For given pairing strategy (7x7x7 grid of numbers on input) it will check whether it is valid pairing strategy.
+- `checker.py`
+  - Script that verifies all needed positions are correct by calling previous programs. Depending on the argument (`DB` or `calc`) it will retrive solutionfrom database or calculate it. Then it verifies it with `verifier.cpp`. 
+  - This script is made in python so it does not compile anything. You simply run it by `python3 ./src/checker.py` (*Note: you have to be in the root of this repository to be able for this to works properly). 
 
 
 ### I will do it on my own
