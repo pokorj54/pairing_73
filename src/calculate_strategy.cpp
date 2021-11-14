@@ -35,7 +35,12 @@ int main(int argc, char** args) {
         cerr << "invalid sequence of moves" << endl;
         return 1;
     }
-    array<array<array<int, 7>, 7>, 7> solutionGrid = compute_draw_strategy(board);
-    cout << solution_to_string(solutionGrid);
+    try {
+        array<array<array<int, 7>, 7>, 7> solutionGrid = compute_draw_strategy(board);
+        cout << solution_to_string(solutionGrid);
+    } catch (const std::exception& e) {
+        cerr << "Solution not found" << endl;
+        return 2;
+    }
     return 0;
 }
