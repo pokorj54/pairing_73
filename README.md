@@ -2,6 +2,8 @@
 
 Jan Pokorný
 
+[![DOI](https://zenodo.org/badge/401669988.svg)](https://zenodo.org/badge/latestdoi/401669988)
+
 ## Overview
 This is my effort to prove that in the Hypercube Tic-Tac-Toe of side lenght 7 and dimension 3 second player can force a draw.
 To achieve this about 80 milion boards are checked for pairing strategy.
